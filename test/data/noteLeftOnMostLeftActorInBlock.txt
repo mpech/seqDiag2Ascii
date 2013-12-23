@@ -1,0 +1,5 @@
+A->B:hello
+alt test
+  note left of A:test
+  note left of B:Hello world
+end

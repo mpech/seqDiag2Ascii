@@ -1,0 +1,5 @@
+alt hello
+  A->B:a
+else
+  A->B:WAZZA
+end

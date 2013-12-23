@@ -1,0 +1,2 @@
+A->B:a
+note right of B:ON THE RIGHT

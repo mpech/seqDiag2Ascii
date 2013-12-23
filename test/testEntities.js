@@ -36,5 +36,29 @@ var p= require('../printer.js');
   var loopInOptional=e.newOptional('hello', [loop]);
   t.is(loopInOptional.minWidth(), 'big condition there'.length+4);
   loopInOptional.print(p);
-//  console.log(p.toString());
 })();
+(function traverse(){
+  p.configure({
+    actors:[{name:'A'},{name:'B'}],
+    widths:[11],
+    paddingLeft:3,
+    paddingRight:2,
+    wsc:'-'
+  });
+  e.configure({
+    arrowBody:'*'
+  });
+  var msg=e.newMessage({name:'A'},{name:'B'},'tes');
+  var note=e.newNote('Yes\nDude\\nROCKS', {name:'A'});
+  var alternative=e.newAlternative('test', [msg], [note]);
+  
+  var optional=e.newOptional('hello?', [alternative,msg]);
+  var nodes=[];
+  optional.traverse(function(node){
+    if(node.name=='message'){
+      nodes.push(node);
+    }
+  });
+  t.is(nodes.length,2);
+})();
+

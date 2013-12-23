@@ -33,6 +33,12 @@ that.configure=function(o){
     }
   }
 }
+that.flush=function(){
+  _lines=[];
+}
+that.mostLeftActorName=function(){
+  return _op.actors[0].name;
+}
 that.mostLeftPositionActor=function(actor){
   return _op.actors[0].position;
 }

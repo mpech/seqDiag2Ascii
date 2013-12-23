@@ -2,15 +2,20 @@ var that={};
 module.exports=that;
 var _op={
   arrowBody:'-',
-  noteHLine:'-',
+  noteHLine:'=',
   noteVerticalLine:'|',
   wsc:' ',
   compositeHLine:'~',
-  alternativeMiddleLine:'x'
+  alternativeMiddleLine:'x',
+  paddingDeeperComposite:0
 };
 that.configure=function(o){
   for(var i in o){
     _op[i]=o[i];
+  }
+  if(_op[i].paddingDeeperComposite<0){
+    _op[i].paddingDeeperComposite=0;
+    throw "expect paddingDeeperComposite >= 0";
   }
 }
 that.newMessage=function(a,b,text){
@@ -46,6 +51,7 @@ AbstractLeaf.prototype.maxLineWidth=function(){
 AbstractLeaf.prototype.width=function(){
   return 2+this.maxLineWidth();
 }
+AbstractLeaf.prototype.traverse=function(cbk){cbk(this);}
 //--------AbstractComposite--------
 function AbstractComposite(){
   this.nodes=[];
@@ -54,7 +60,7 @@ function AbstractComposite(){
 AbstractComposite.prototype=new Abstract();
 AbstractComposite.prototype.depth=function(){
   var depth=0;
-  this.nodes.forEach(function(entry){
+  this.allNodes().forEach(function(entry){
     if(entry instanceof AbstractComposite){
       subDepth=1+entry.depth();
       if(subDepth>depth){
@@ -63,18 +69,6 @@ AbstractComposite.prototype.depth=function(){
     }
   });
   return depth;
-}
-AbstractComposite.prototype.minWidth=function(){
-  var minWidth=2+this.condition.length;
-  this.nodes.forEach(function(entry){
-    if(entry instanceof AbstractComposite){
-      var width=entry.minWidth();
-      if(width+2>minWidth){
-        minWidth=width+2;
-      }
-    }
-  });
-  return minWidth;
 }
 AbstractComposite.prototype.activateBorder=function(printer, left, right){
   printer.addOnNewLine(function(line){
@@ -88,16 +82,50 @@ AbstractComposite.prototype.deactivateBorder=function(printer){
 AbstractComposite.prototype.conditionName=function(){
   return this.name;
 }
+AbstractComposite.prototype.computePadding=function(mostLeftActorName, spaceBetweenActors){
+  var minPadding=_op.paddingDeeperComposite;
+  var n=0;
+  var noteLeftPadding=0;
+  this.allNodes().forEach(function(entry){
+    if(entry instanceof Note){
+      if(entry.leftOrRight=='left' && entry.actor.name==mostLeftActorName){
+        noteLeftPadding += entry.width()+1;
+      }
+    }
+  });
+  if(noteLeftPadding>minPadding){
+    minPadding = noteLeftPadding;
+  }
+  if(this.getConditionPrinterString().length>spaceBetweenActors+2*minPadding){
+    n=this.getConditionPrinterString().length - (spaceBetweenActors+2*minPadding);
+    minPadding+=Math.ceil(n/2);
+  }
+  
+  var computedPadding = minPadding;
+  //if children have equal or greater padding
+  this.allNodes().forEach(function(entry){
+    if(entry instanceof AbstractComposite){
+      var paddingTemp=entry.computePadding(mostLeftActorName,spaceBetweenActors);
+      if(paddingTemp>=computedPadding){
+        computedPadding=paddingTemp+1;
+      }
+    }
+  });
+  return computedPadding;
+}
+AbstractComposite.prototype.getConditionPrinterString=function(){
+return this.conditionName()+'|['+this.condition+']';
+}
 AbstractComposite.prototype.print=function(printer){
-  var depth=this.depth();
-  //assumes actors overall width > condition.length so block is centered
-  var left=printer.mostLeftPositionActor()-1-depth;
-  var right=printer.mostRightPositionActor()+1+depth;
+  var space=printer.mostRightPositionActor() - printer.mostLeftPositionActor();
+  var computedPadding=this.computePadding(printer.mostLeftActorName(),space);
+  var left=printer.mostLeftPositionActor()-computedPadding;
+  var right=printer.mostRightPositionActor()+computedPadding;
   this.activateBorder(printer, left, right);
   this.printHorizontalLine(printer,left, right, _op.compositeHLine);
   var conditionName=this.conditionName();
-  var condition=conditionName+'|['+this.condition+']';
-  printer.newLine().override(left+1, condition);
+  var conditionStr=this.getConditionPrinterString();
+  printer.newLine().override(left+1, conditionStr);
   printer.newLine().override(left+1, Array(conditionName.length+2).join(_op.compositeHLine));
   
   this.nodes.forEach(function(x){
@@ -111,12 +139,21 @@ AbstractComposite.prototype.print=function(printer){
 AbstractComposite.prototype.printHorizontalLine=function(printer, left, right, symbol){
   printer.newLine().override(left, Array(right-left+2).join(symbol));
 }
+AbstractComposite.prototype.allNodes=function(){
+  return this.nodes;
+}
 AbstractComposite.prototype.getActors=function(){
   var actors=[];
-  this.nodes.forEach(function(entry){
+  this.allNodes().forEach(function(entry){
     actors=actors.concat(entry.getActors());
   });
   return actors;
+}
+AbstractComposite.prototype.traverse=function(cbk){
+  this.allNodes().forEach(function(x){
+    x.traverse(cbk);
+  });
+  cbk(this);
 }
 //--------Message--------
 function Message(a,b,text){
@@ -139,7 +176,7 @@ Message.prototype.print=function(printer){
   }
   var str=Array(Math.abs(right-left)+1);
   var mostLeft=left;
-  if(left<right){
+  if(printer.positionOfActor(this.a)<printer.positionOfActor(this.b)){
     str=str.join(_op.arrowBody)+'>';
   }else{
     str='<'+str.join(_op.arrowBody);
@@ -192,12 +229,15 @@ Note.prototype.getActors=function(){
 function Alternative(condition, ifNodes, elseNodes){
   this.condition=condition;
   this.nodes=ifNodes;
-  this.elseNodes=elseNodes;
+  this.elseNodes=elseNodes||[];
   this.name='Alt';
 }
 Alternative.prototype=new AbstractComposite();
+Alternative.prototype.allNodes=function(){
+  return this.nodes.concat(this.elseNodes);
+}
 Alternative.prototype.customPrint=function(printer, left, right){
-  if(this.elseNodes && this.elseNodes.length){
+  if(this.elseNodes.length){
     this.printHorizontalLine(printer, left, right, _op.alternativeMiddleLine);
     this.elseNodes.forEach(function(x){
       x.print(printer);
@@ -205,16 +245,6 @@ Alternative.prototype.customPrint=function(printer, left, right){
   }
 }
 
-Alternative.prototype.getActors=function(){
-  var actors=[];
-  this.nodes.forEach(function(entry){
-    actors=actors.concat(entry.getActors());
-  });
-  this.elseNodes.forEach(function(entry){
-    actors=actors.concat(entry.getActors());
-  });
-  return actors;
-}
 //--------Loop--------
 function Loop(condition, nodes){
   this.condition=condition;

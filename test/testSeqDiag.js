@@ -35,23 +35,44 @@ var fs=require('fs');
 })();
 
 (function getPadding(){
-  var msg=e.newOptional('superMegaLongTextOverkill', []);//25
+  var msg=e.newOptional('superMegaLongTextOverkill', []);
   s.addNode(msg);
   s.addNode(msg);
-  t.is(s.getPadding([5,6]),8);
+  t.is(s.getPadding([5,6],[{name:'A'},{name:'B'}]),10);
 })();
 */
-
-(function buildFromString(){
-  fs.readFile('./testGrammarSimple.txt', function(err,data){
-    s.buildFromString(data.toString(), function(){
-      s.print();
-      
-      
-    });
+(function(){
+  s.configure({
+    printer:{
+      wsc:'.'
+    },
+    entities:{
+      paddingDeeperComposite:4
+    }
   });
+  function testFile(fname){
+    var data=fs.readFileSync('./data/'+fname);
+    s.buildFromString(data.toString(), function(){
+      console.log('print for '+fname);
+      s.print();
+    });
+  }
+  testFile('testInAltBigTitle.txt');
+  testFile('testOutAltBigTitle.txt');
+  testFile('webSeqDiagramSample.txt');
+//  testFile('resizedByActor.txt');
+//  testFile('resizedByMsg.txt');
+//  testFile('resizedByNote.txt');
+//  testFile('noteLeftOnMostLeftActorInBlock.txt');
+//  testFile('noteLeftOnMostLeftActor.txt');
+//   testFile('noResizeByNote.txt');
+//  testFile('noteRightOnMostLeftActor.txt');
+//  testFile('resizedByElseBlock.txt');
+    testFile('multiLine.txt');
+  try{
+//  testFile('testUniqActor.txt');//not supported
+  }catch(e){}
 })();
-
 
 
 

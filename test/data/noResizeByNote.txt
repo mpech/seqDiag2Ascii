@@ -1,0 +1,7 @@
+alt alternative1WithTitle
+  alt alternative2
+    note left of A:hello
+    A->B:t
+  end
+  note left of A:world
+end

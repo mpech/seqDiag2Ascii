@@ -1,0 +1,6 @@
+
+alt zezgezgezg
+  alt z
+    A->B:a
+  end
+end

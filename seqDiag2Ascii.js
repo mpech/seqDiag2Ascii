@@ -4,12 +4,14 @@ var fs=require('fs');
 var _printer=require('./printer.js');
 var _entities=require('./entities.js');
 var _nodes=[];
+var _op={
+  printer:{}
+};
 var _grammarParser=require('grammarParser');
 var _grammarHelper=(function InitGrammar(){
   var s=fs.readFileSync(__dirname+'/grammar.txt').toString();
   var grammar=_grammarParser.grammarFromString(s);
   var nf = _grammarParser.NodeFactory();
-  
   var depth=0;
   var nodeEntities={0:[]};
   nf.register('_anyLine',function(name,nodeList, matchedStr){
@@ -33,7 +35,7 @@ var _grammarHelper=(function InitGrammar(){
       return note.toString();
     }}
   }).register('_title',function(name,nodeList,matchedStr){return{toString:function(){
-    //not supported right not
+    //parsed but not handled
       return matchedStr;
     }}
   }).register('alternative',function(name,nodeList){return{toString:function(){
@@ -69,7 +71,7 @@ var _grammarHelper=(function InitGrammar(){
       var alternative=_entities.newOptional(condition, nodes);
       nodeEntities[depth].push(alternative)
     }}
-  })
+  });
   return {
     parse:function(str){
       depth=0;
@@ -77,13 +79,16 @@ var _grammarHelper=(function InitGrammar(){
       var backOptions={left:str, nodeList:[]};
       _grammarParser.doPred(grammar, nf, 'sd2a', backOptions);
       var node = nf.applyFunc('master', backOptions.nodeList);
-      node.toString();
+      node.toString();//this is needed to recurse..TODO traverse the grammar
       return nodeEntities[0];
     }
-  }
-  
-  
+  };
 })();
+that.configure=function(o){
+  for(var i in o){
+    _op[i]=o[i];
+  }
+}
 that.buildFromString=function(s,cbk){
   var nodeEntities=_grammarHelper.parse(s+"\n");
   that.setNodes(nodeEntities);
@@ -91,13 +96,15 @@ that.buildFromString=function(s,cbk){
 }
 that.print=function(cbkStr){
   cbkStr=cbkStr?cbkStr:function(err,str){console.log(err?err:str)}
-  
+  _printer.flush();
+  _entities.configure(_op.entities||{});
   var actors=that.getActorList();
   var widths=that.getMinWidths(actors);
   var error=configurePrinter(actors,widths);
   if(error){
     return cbkStr(error);
   }
+  
   var line=_printer.newLine();
   var mostLeft=_printer.mostLeftPositionActor();
   for(var i=0; i<actors.length;++i){
@@ -107,7 +114,6 @@ that.print=function(cbkStr){
   }
   _printer.newLine();
   _printer.newLine();
-  
   _nodes.forEach(function(node){
     node.print(_printer);
   });
@@ -168,37 +174,36 @@ that.getMinWidths=function(actors){
     var width=Math.ceil(actors[i-1].name.length/2) + Math.ceil(actors[i].name.length/2)+1;
     widths.push(width);
   }
-  var leafNodes=_nodes.filter(function(node){
-    return node.name && ['message', 'note'].indexOf(node.name)!=-1;
-  });
   //update leaf with adjacent actors
   var leftMessages=[];
-  leafNodes.forEach(function(node){
-    if(node.name=='note'){
-      var index=indexOfActor(node.actor);
-      if(node.leftOrRight=='left'){
-        if(index!=0){
-          setLengthIfGreater(index-1, node.width()+1);//+1 for actor right border
+  _nodes.forEach(function(traversed){
+    traversed.traverse(function(node){
+      if(node.name=='note'){
+        var index=indexOfActor(node.actor);
+        if(node.leftOrRight=='left'){
+          if(index!=0){
+            setLengthIfGreater(index-1, node.width()+1);//+1 for actor right border
+          }
+        }else{
+          if(index!=actors.length-1){
+            setLengthIfGreater(index, node.width()+1);
+          }
         }
-      }else{
-        if(index!=actors.length-1){
-          setLengthIfGreater(index, node.width()+1);
+      }else if(node.name=='message'){
+        var left=indexOfActor(node.a);
+        var right=indexOfActor(node.b);
+        if(right<left){
+          var temp=left;
+          left=right;
+          right=temp;
+        }
+        if(right-left<=1){
+          setLengthIfGreater(left, node.width()+1);
+        }else{
+          leftMessages.push(node);
         }
       }
-    }else if(node.name=='message'){
-      var left=indexOfActor(node.a);
-      var right=indexOfActor(node.b);
-      if(right<left){
-        var temp=left;
-        left=right;
-        right=temp;
-      }
-      if(right-left<=1){
-        setLengthIfGreater(left, node.width()+1);
-      }else{
-        leftMessages.push(node);
-      }
-    }
+    });
   });
   
   //update leaf with not adjacent actors. Gives delta width for actors in the middle
@@ -225,21 +230,30 @@ that.getMinWidths=function(actors){
   return widths;
 }
 that.getPadding=function(widths, actors){
+  var actorPadding=Math.max(Math.ceil(actors[0].name.length/2),Math.ceil(actors[actors.length-1].name.length/2));
+  var padding=0;
   var totalWidth=widths.reduce(function(a,b){return a+b});
-  totalWidth+=Math.ceil(actors[0].name.length/2);
-  totalWidth+=Math.ceil(actors[actors.length-1].name.length/2);
-  var minWidth=0;
   _nodes.filter(function(x){
     return x.name && ['Opt','Alt','Loop'].indexOf(x.name)!=-1;
   }).forEach(function(x){
-    var width=x.minWidth();
-    if(width>minWidth){
-      minWidth=width;
+    var temp=x.computePadding(actors[0].name, totalWidth);
+    if(temp>padding){
+      padding=temp;
     }
   });
-  var padding=Math.max(Math.ceil(actors[0].name.length/2),Math.ceil(actors[actors.length-1].name.length/2));
-  if(minWidth>totalWidth){
-    padding=Math.ceil((minWidth-totalWidth)/2);
+  var noteLeftPadding=0;
+  _nodes.forEach(function(entry){
+    if(entry.name=='note'){
+      if(entry.leftOrRight=='left' && entry.actor.name==actors[0].name){
+        noteLeftPadding += entry.width();
+      }
+    }
+  });
+  if(noteLeftPadding>padding){
+    padding=noteLeftPadding;
+  }
+  if(actorPadding>padding){
+    padding=actorPadding;
   }
   return padding;
 }
@@ -251,8 +265,11 @@ function configurePrinter(actors, widths){
   var padding = that.getPadding(widths, actors);
   o.actors=actors;
   o.widths=widths;
-  o.paddingLeft=padding+50;
+  o.paddingLeft=padding;
   o.paddingRight=padding;
+  for(i in _op.printer){
+    o[i]=_op.printer[i];
+  }
   _printer.configure(o);
 }
 
