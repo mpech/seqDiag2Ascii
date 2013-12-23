@@ -8,7 +8,7 @@ examples
 ========
 
 A basic sample
--------------------------------------------------------------------
+-------------------------------------------------
 sample.txt:
 <pre><code>
 title This title is not yet handled
@@ -30,49 +30,49 @@ end
 sample.js:
 
 ````javascript
-#!/usr/bin/env node
-var data=fs.readFileSync('sample.txt');
-require('seqDiag2Ascii').buildFromString(data.toString(), function(){
-  s.print();
-  /*s.print(function(str){
-  
-  });*/
-});
+    #!/usr/bin/env node
+    var data=fs.readFileSync('sample.txt');
+    require('seqDiag2Ascii').buildFromString(data.toString(), function(){
+      s.print();
+      /*s.print(function(str){
+      
+      });*/
+    });
 ````
 
 ***
 Output:
 <pre><code>
-     A                      B     
-     |                      |     
-     |                      |     
-     |/=======              |     
-     ||sciiii|              |     
-     |========              |     
-     |=                     |     
-     ||Takes a coffee       |     
-     |<                     |     
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-|Alt|[no coffee left]       |    |
-|~~~~|                      |    |
-|    |   get me a coffee    |    |
-|    |--------------------->|    |
-|    |          no          |    |
-|    |<---------------------|    |
-|    |     sudo blabla      |    |
-|    |--------------------->|    |
-|    |          :)          |    |
-|    |<---------------------|    |
-|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|
-|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-||Opt|[sunny day]           |   ||
-||~~~~                      |   ||
-||   | ultimate FRISBEEE??? |   ||
-||   |--------------------->|   ||
-|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     |                      |     
-     |                      | 
+         A                      B     
+         |                      |     
+         |                      |     
+         |/=======              |     
+         ||sciiii|              |     
+         |========              |     
+         |=                     |     
+         ||Takes a coffee       |     
+         |<                     |     
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |Alt|[no coffee left]       |    |
+    |~~~~|                      |    |
+    |    |   get me a coffee    |    |
+    |    |--------------------->|    |
+    |    |          no          |    |
+    |    |<---------------------|    |
+    |    |     sudo blabla      |    |
+    |    |--------------------->|    |
+    |    |          :)          |    |
+    |    |<---------------------|    |
+    |xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|
+    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+    ||Opt|[sunny day]           |   ||
+    ||~~~~                      |   ||
+    ||   | ultimate FRISBEEE??? |   ||
+    ||   |--------------------->|   ||
+    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                      |     
+         |                      | 
 
 </pre></code>
 
@@ -95,30 +95,30 @@ end
 ***
 output:
 <pre><code>
-      A                        B      
-      |                        |      
-      |                        |      
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-|Opt|[want a loop inside]      |     |
-|~~~~ |                        |     |
-|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-||Loop|[want a alt inside]     |    ||
-||~~~~~                        |    ||
-||~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~||
-|||Alt|[want an else]          |   |||
-|||~~~~                        |   |||
-|||xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|||
-|||   | You want it you got it |   |||
-|||   |----------------------->|   |||
-||~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~||
-|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                        |      
-      |                        |      
+          A                        B      
+          |                        |      
+          |                        |      
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |Opt|[want a loop inside]      |     |
+    |~~~~ |                        |     |
+    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+    ||Loop|[want a alt inside]     |    ||
+    ||~~~~~                        |    ||
+    ||~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~||
+    |||Alt|[want an else]          |   |||
+    |||~~~~                        |   |||
+    |||xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx|||
+    |||   | You want it you got it |   |||
+    |||   |----------------------->|   |||
+    ||~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~||
+    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          |                        |      
+          |                        |      
 </code></pre>
 
 Actors are auto resized
--------------------------------------------------
+-----------------------
  
 resizedByActor.txt:
 
