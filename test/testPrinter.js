@@ -1,6 +1,6 @@
 #!/home/mpech/install/node/node/out/bin/node
 var t=require('./libTest.js').getNew();
-var p= require('../printer.js');
+var p= require('../lib/printer.js');
 p.configure({
   actors:[{name:'A'},{name:'B'}],
   widths:[4],

@@ -1,7 +1,7 @@
 #!/home/mpech/install/node/node/out/bin/node
 var t=require('./libTest.js').getNew();
-var e= require('../entities.js');
-var p= require('../printer.js');
+var e= require('../lib/entities.js');
+var p= require('../lib/printer.js');
 (function NoteOnRight(){
   p.configure({
     actors:[{name:'A'},{name:'B'}],
@@ -34,7 +34,6 @@ var p= require('../printer.js');
   loop.print(p);
   
   var loopInOptional=e.newOptional('hello', [loop]);
-  t.is(loopInOptional.minWidth(), 'big condition there'.length+4);
   loopInOptional.print(p);
 })();
 (function traverse(){

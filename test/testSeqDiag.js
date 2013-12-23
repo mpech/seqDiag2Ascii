@@ -1,7 +1,7 @@
 #!/home/mpech/install/node/node/out/bin/node
 var t=require('./libTest.js').getNew();
 var s= require('../seqDiag2Ascii.js');
-var e= require('../entities.js');
+var e= require('../lib/entities.js');
 var fs=require('fs');
 /*
 (function testActorList(){
@@ -44,7 +44,7 @@ var fs=require('fs');
 (function(){
   s.configure({
     printer:{
-      wsc:'.'
+      wsc:' '
     },
     entities:{
       paddingDeeperComposite:4
@@ -57,18 +57,20 @@ var fs=require('fs');
       s.print();
     });
   }
-  testFile('testInAltBigTitle.txt');
-  testFile('testOutAltBigTitle.txt');
-  testFile('webSeqDiagramSample.txt');
-//  testFile('resizedByActor.txt');
+//  testFile('testInAltBigTitle.txt');
+//  testFile('testOutAltBigTitle.txt');
+//  testFile('webSeqDiagramSample.txt');
+  testFile('resizedByActor.txt');
 //  testFile('resizedByMsg.txt');
 //  testFile('resizedByNote.txt');
 //  testFile('noteLeftOnMostLeftActorInBlock.txt');
 //  testFile('noteLeftOnMostLeftActor.txt');
-//   testFile('noResizeByNote.txt');
+//  testFile('noResizeByNote.txt');
 //  testFile('noteRightOnMostLeftActor.txt');
 //  testFile('resizedByElseBlock.txt');
-    testFile('multiLine.txt');
+//  testFile('multiLine.txt');
+//  testFile('sample.txt');
+//  testFile('sample1.txt');
   try{
 //  testFile('testUniqActor.txt');//not supported
   }catch(e){}

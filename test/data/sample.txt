@@ -1,0 +1,14 @@
+title This title is not yet handled
+non valid lines are ignored
+note right of A: sciiii
+A->A: Takes a coffee
+alt no coffee left
+  A-->B: get me a coffee
+  B->A:no
+  A->+B: sudo blabla
+  B-->-A: :)
+else
+  opt sunny day
+    A->B: ultimate FRISBEEE???
+  end
+end

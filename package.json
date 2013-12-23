@@ -1,0 +1,8 @@
+{
+  "name": "seqDiag2Ascii",
+  "version": "1.0.0",
+  "description": "render sequence diagram in ascii",
+  "main": "seqDiag2Ascii.js",
+  "readme": "./README.md",
+	"_id":"seqDiag 1.0.0"
+}

@@ -1,0 +1,10 @@
+What about an else in a alt of a loop of an optional in a alt
+alt want an optional inside
+  opt want a loop inside
+    loop want a alt inside
+      alt want an else
+      else
+        A->B:You want it you got it
+     end
+  end
+end

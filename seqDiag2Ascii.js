@@ -1,15 +1,15 @@
 var that={};
 module.exports=that;
 var fs=require('fs');
-var _printer=require('./printer.js');
-var _entities=require('./entities.js');
+var _printer=require('./lib/printer.js');
+var _entities=require('./lib/entities.js');
 var _nodes=[];
 var _op={
   printer:{}
 };
 var _grammarParser=require('grammarParser');
 var _grammarHelper=(function InitGrammar(){
-  var s=fs.readFileSync(__dirname+'/grammar.txt').toString();
+  var s=fs.readFileSync(__dirname+'/lib/grammar.txt').toString();
   var grammar=_grammarParser.grammarFromString(s);
   var nf = _grammarParser.NodeFactory();
   var depth=0;
