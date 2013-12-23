@@ -10,7 +10,7 @@ examples
 A basic sample
 -------------------------------------------------------------------
 sample.txt:
-````
+<pre><code>
 title This title is not yet handled
 non valid lines are ignored
 note right of A: sciiii
@@ -25,8 +25,8 @@ else
     A->B: ultimate FRISBEEE???
   end
 end
+</code></pre>
 
-````
 sample.js:
 
 ````javascript
@@ -42,7 +42,7 @@ require('seqDiag2Ascii').buildFromString(data.toString(), function(){
 
 ***
 Output:
-````
+<pre><code>
      A                      B     
      |                      |     
      |                      |     
@@ -74,13 +74,13 @@ Output:
      |                      |     
      |                      | 
 
-````
+</pre></code>
 
 What about an else in a alt of a loop of an optional in a alt
 -------------------------------------------------------------
  
 sample1.txt:
-````
+<pre>
 alt want an optional inside
   opt want a loop inside
     loop want a alt inside
@@ -90,11 +90,11 @@ alt want an optional inside
      end
   end
 end
-
-````
+</pre>
 
 ***
-````
+output:
+<pre><code>
       A                        B      
       |                        |      
       |                        |      
@@ -115,20 +115,20 @@ end
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                        |      
       |                        |      
-````
+</code></pre>
 
 Actors are auto resized
 -------------------------------------------------
  
 resizedByActor.txt:
 
-````
+<pre>
 A->B:test
 Afezfzef->Bfezfzf:s
-````
+</pre>
 
 ***
-````
+<pre><code>
     A      B Afezfzef  Bfezfzf 
     |      |     |        |    
     |      |     |        |    
@@ -138,7 +138,7 @@ Afezfzef->Bfezfzf:s
     |      |     |------->|    
     |      |     |        |    
     |      |     |        |    
-````
+</code></pre>
 
 installation
 ============
