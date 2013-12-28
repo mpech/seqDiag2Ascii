@@ -11,7 +11,7 @@ A basic sample
 -------------------------------------------------
 sample.txt:
 
-    title This title is not yet handled
+    title A basic sample
     non valid lines are ignored
     note right of A: sciiii
     A->A: Takes a coffee
@@ -30,7 +30,10 @@ sample.js:
 
     #!/usr/bin/env node
     var data=fs.readFileSync('sample.txt');
-    require('seqDiag2Ascii').buildFromString(data.toString(), function(){
+    require('seqDiag2Ascii').buildFromString(data.toString(), function(err){
+      if(err){
+        console.log(err.failedLines);
+      }
       s.print();
       /*s.print(function(str){
       
@@ -42,6 +45,8 @@ sample.js:
 Output:
 
 <pre><code>
+       A basic sample       
+                            
   A                      B  
   |                      |  
   |                      |  

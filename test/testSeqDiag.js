@@ -53,8 +53,10 @@ var fs=require('fs');
   });
   function testFile(fname){
     var data=fs.readFileSync('./data/'+fname);
-    s.buildFromString(data.toString(), function(){
-      console.log('print for '+fname);
+    s.buildFromString(data.toString(), function(err,str){
+      if(err){
+        //err.failedLines.map(function(x){return 'Syntax failed : '+x}).join(''));
+      }
       s.print();
     });
   }
@@ -70,9 +72,9 @@ var fs=require('fs');
 //  testFile('noteRightOnMostLeftActor.txt');
 //  testFile('resizedByElseBlock.txt');
 //  testFile('multiLine.txt');
-//  testFile('sample.txt');
+  testFile('sample.txt');
 //  testFile('sample1.txt');
-    testFile('title.txt');
+//    testFile('title.txt');
   try{
 //  testFile('testUniqActor.txt');//not supported
   }catch(e){}

@@ -1,4 +1,4 @@
-title This title is not yet handled
+title  A basic sample
 non valid lines are ignored
 note right of A: sciiii
 A->A: Takes a coffee
