@@ -3,7 +3,7 @@ var t=require('./libTest.js').getNew();
 var s= require('../seqDiag2Ascii.js');
 var e= require('../lib/entities.js');
 var fs=require('fs');
-/*
+
 (function testActorList(){
   var actors={name:'ActorList', actors:[{name:'C'}]}
   var msg=e.newMessage({name:'A'},{name:'B'},'tes')
@@ -40,14 +40,15 @@ var fs=require('fs');
   s.addNode(msg);
   t.is(s.getPadding([5,6],[{name:'A'},{name:'B'}]),10);
 })();
-*/
+
 (function(){
   s.configure({
     printer:{
       wsc:' '
     },
     entities:{
-      paddingDeeperComposite:4
+      paddingDeeperComposite:1,
+      arrowLeftTip:'z'
     }
   });
   function testFile(fname){
@@ -60,7 +61,7 @@ var fs=require('fs');
 //  testFile('testInAltBigTitle.txt');
 //  testFile('testOutAltBigTitle.txt');
 //  testFile('webSeqDiagramSample.txt');
-  testFile('resizedByActor.txt');
+//  testFile('resizedByActor.txt');
 //  testFile('resizedByMsg.txt');
 //  testFile('resizedByNote.txt');
 //  testFile('noteLeftOnMostLeftActorInBlock.txt');
@@ -71,6 +72,7 @@ var fs=require('fs');
 //  testFile('multiLine.txt');
 //  testFile('sample.txt');
 //  testFile('sample1.txt');
+    testFile('title.txt');
   try{
 //  testFile('testUniqActor.txt');//not supported
   }catch(e){}

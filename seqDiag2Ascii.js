@@ -34,8 +34,9 @@ var _grammarHelper=(function InitGrammar(){
       nodeEntities[depth].push(note);
       return note.toString();
     }}
-  }).register('_title',function(name,nodeList,matchedStr){return{toString:function(){
-    //parsed but not handled
+  }).register('title',function(name,nodeList,matchedStr){return{toString:function(){
+      var title=_entities.newTitle(nodeList[2].toString());
+      nodeEntities[depth].push(title);
       return matchedStr;
     }}
   }).register('alternative',function(name,nodeList){return{toString:function(){
@@ -105,6 +106,12 @@ that.print=function(cbkStr){
     return cbkStr(error);
   }
   
+  //plot title if any
+  _nodes.forEach(function(node){
+    if(node.name=='title'){
+      node.print(_printer);
+    }
+  });
   var line=_printer.newLine();
   var mostLeft=_printer.mostLeftPositionActor();
   for(var i=0; i<actors.length;++i){
@@ -115,7 +122,9 @@ that.print=function(cbkStr){
   _printer.newLine();
   _printer.newLine();
   _nodes.forEach(function(node){
-    node.print(_printer);
+    if(node.name!='title'){
+      node.print(_printer);
+    }
   });
   _printer.newLine();
   _printer.newLine();
