@@ -14,9 +14,10 @@ var _grammarHelper=(function InitGrammar(){
   var nf = _grammarParser.NodeFactory();
   var depth=0;
   var nodeEntities={0:[]};
+  var failedLines=[];
   nf.register('_anyLine',function(name,nodeList, matchedStr){
     //not supported right now
-    console.log('SYNTAX FAIL '+matchedStr);
+    failedLines.push(matchedStr);
     return {toString:function(){return 'Fail to parse >'+matchedStr+'<'}};
   }).register('message',function(name,nodeList){return {toString:function(){
       var actorLeft={name:nodeList[0].toString()};
@@ -74,13 +75,15 @@ var _grammarHelper=(function InitGrammar(){
     }}
   });
   return {
-    parse:function(str){
+    parse:function(str, back){
       depth=0;
       nodeEntities={0:[]};
+      failedNodes=[];
       var backOptions={left:str, nodeList:[]};
       _grammarParser.doPred(grammar, nf, 'sd2a', backOptions);
       var node = nf.applyFunc('master', backOptions.nodeList);
       node.toString();//this is needed to recurse..TODO traverse the grammar
+      back.failedLines=failedLines;
       return nodeEntities[0];
     }
   };
@@ -91,9 +94,13 @@ that.configure=function(o){
   }
 }
 that.buildFromString=function(s,cbk){
-  var nodeEntities=_grammarHelper.parse(s+"\n");
+  var back={failedLines:null}
+  var nodeEntities=_grammarHelper.parse(s+"\n",back);
   that.setNodes(nodeEntities);
-  cbk&&cbk(s);
+  if(back.failedLines.length==0){
+    back=null;
+  }
+  cbk&&cbk(back,s);
 }
 that.print=function(cbkStr){
   cbkStr=cbkStr?cbkStr:function(err,str){console.log(err?err:str)}
@@ -110,6 +117,7 @@ that.print=function(cbkStr){
   _nodes.forEach(function(node){
     if(node.name=='title'){
       node.print(_printer);
+      _printer.newLine({empty:true});
     }
   });
   var line=_printer.newLine();
