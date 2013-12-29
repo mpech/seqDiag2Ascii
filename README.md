@@ -177,6 +177,10 @@ clone this project from github:
 
     git clone http://github.com/mpech/seqDiag2Ascii.git
 
+or install it directly
+
+		npm install mpech/seqDiag2Ascii
+
 Run tests by hand :)
 
 
